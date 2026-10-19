@@ -33,7 +33,7 @@ argument-hint: "Сконфігурувати build/, зібрати hello і з�
 ```sh
 cmake -S . -B build
 cmake --build build
-ctest --test-dir build --output-on-failure
+ctest --test-dir build -C Debug --output-on-failure
 ```
 
 Очікується успішна збірка та проходження `BasicAddition`.
@@ -44,4 +44,3 @@ ctest --test-dir build --output-on-failure
 
 Зупини виконання, збережи діагностику та не переходь до `create-actions`, якщо
 `cmake`, збірка або `ctest` завершилися невдало.
-

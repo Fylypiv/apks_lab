@@ -46,7 +46,7 @@ test -f CMakeLists.txt
 test -f .gitignore
 cmake -S . -B build
 cmake --build build
-ctest --test-dir build --output-on-failure
+ctest --test-dir build -C Debug --output-on-failure
 ```
 
 ## Повідомлення про помилку
