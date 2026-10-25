@@ -19,7 +19,7 @@ argument-hint: "Підготувати Git-репозиторій у корен�
 2. Якщо репозиторій відсутній, виконай `git init`.
 3. Створи або обережно онови `.gitignore`, зберігши наявні правила.
 4. Додай правило `build/` для ігнорування каталогу збірки та типові артефакти
-   CMake/компілятора.
+   CMake/компілятора, а також `.env`, `*.pem`, `*.key` і `.vs/`.
 5. Покажи стан репозиторію командою `git status --short`.
 
 Не видаляй файли, не скидай незбережені зміни та не створюй коміт без окремого
@@ -28,13 +28,18 @@ argument-hint: "Підготувати Git-репозиторій у корен�
 ## Очікувані файли
 
 - `.git/` — наявний або щойно ініціалізований Git-репозиторій;
-- `.gitignore` — містить `build/` і не втрачає попередніх правил.
+- `.gitignore` — містить `build/`, `.env`, `*.pem`, `*.key`, `.vs/` і не
+  втрачає попередніх правил.
 
 ## Команди перевірки
 
 ```sh
 git rev-parse --is-inside-work-tree
 grep -Eq '(^|/)build(/|$)' .gitignore
+grep -Fxq '.env' .gitignore
+grep -Fq '*.pem' .gitignore
+grep -Fq '*.key' .gitignore
+grep -Fq '.vs/' .gitignore
 git status --short
 ```
 
@@ -42,11 +47,14 @@ git status --short
 
 ```powershell
 git rev-parse --is-inside-work-tree
-Select-String -Path .gitignore -Pattern "build/"
+Select-String -Path .gitignore -Pattern "^build/$"
+Select-String -Path .gitignore -SimpleMatch -Pattern ".env"
+Select-String -Path .gitignore -SimpleMatch -Pattern "*.pem"
+Select-String -Path .gitignore -SimpleMatch -Pattern "*.key"
+Select-String -Path .gitignore -SimpleMatch -Pattern ".vs/"
 git status --short
 ```
 
 ## Повідомлення про помилку
 
 `git-init: помилка на етапі <етап>: <повідомлення>. Наступні етапи не запускаються.`
-

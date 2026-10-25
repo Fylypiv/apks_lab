@@ -16,8 +16,9 @@ argument-hint: "Створити src/, tests/, Hello World і .gitignore"
 ## Дії
 
 1. Виклич skill `project-scaffold`.
-2. Передай йому корінь репозиторію, вимогу C++/CMake/GoogleTest та наявні
-   файли, які потрібно зберегти.
+2. Передай йому корінь репозиторію, `language: C++`,
+   `project_name: apks_lab`, вимогу CMake/GoogleTest та наявні файли, які
+   потрібно зберегти.
 3. Перевір, що scaffold створив базову структуру і не видалив користувацькі
    зміни.
 
@@ -26,6 +27,9 @@ argument-hint: "Створити src/, tests/, Hello World і .gitignore"
 - `src/main.cpp` із виведенням `Hello World`;
 - `tests/`;
 - `.gitignore` із правилом `build/`.
+- `docs/architecture.md`;
+- `docs/usage.md`;
+- `README.md`, якщо його не існувало; наявний README не перезаписується.
 
 ## Команди перевірки
 
@@ -34,6 +38,25 @@ test -f src/main.cpp
 grep -Fq "Hello World" src/main.cpp
 test -d tests
 grep -Eq '(^|/)build(/|$)' .gitignore
+test -f docs/architecture.md
+test -f docs/usage.md
+test -f README.md
+grep -Fq "Запуск агента" README.md
+grep -Fq "Запуск проєкту" README.md
+```
+
+У PowerShell:
+
+```powershell
+if (!(Test-Path src\main.cpp)) { exit 1 }
+Select-String -Path src\main.cpp -Pattern "Hello World"
+if (!(Test-Path tests)) { exit 1 }
+Select-String -Path .gitignore -Pattern "build/"
+if (!(Test-Path docs\architecture.md)) { exit 1 }
+if (!(Test-Path docs\usage.md)) { exit 1 }
+if (!(Test-Path README.md)) { exit 1 }
+Select-String -Path README.md -Pattern "Запуск агента"
+Select-String -Path README.md -Pattern "Запуск проєкту"
 ```
 
 ## Повідомлення про помилку
@@ -42,4 +65,3 @@ grep -Eq '(^|/)build(/|$)' .gitignore
 
 Зупини виконання та не переходь до `create-build`, доки всі очікувані файли не
 пройшли перевірку.
-

@@ -32,11 +32,26 @@ argument-hint: "Сконфігурувати build/, зібрати hello і з�
 
 ```sh
 cmake -S . -B build
-cmake --build build
-ctest --test-dir build --output-on-failure
+cmake --build build --config Debug
+ctest --test-dir build -C Debug --output-on-failure
+test "$(build/bin/hello)" = "Hello World"
 ```
 
-Очікується успішна збірка та проходження `BasicAddition`.
+У PowerShell:
+
+```powershell
+cmake -S . -B build
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+cmake --build build --config Debug
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+ctest --test-dir build -C Debug --output-on-failure
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ((& .\build\bin\Debug\hello.exe) -ne "Hello World") { exit 1 }
+```
+
+Очікується успішна збірка, проходження `BasicAddition` і виведення `Hello
+World` виконуваним файлом `hello`. Для Visual Studio використовується шлях
+`build/bin/Debug/hello.exe`; для Unix — `build/bin/hello`.
 
 ## Повідомлення про помилку
 
@@ -44,4 +59,3 @@ ctest --test-dir build --output-on-failure
 
 Зупини виконання, збережи діагностику та не переходь до `create-actions`, якщо
 `cmake`, збірка або `ctest` завершилися невдало.
-
