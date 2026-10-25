@@ -1,0 +1,48 @@
+name: CMake and GoogleTest
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run Unix CI
+        if: runner.os != 'Windows'
+        shell: sh
+        run: sh ci.sh
+
+      - name: Run Windows CI
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: call ci.bat
+
+      - name: Upload hello
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-${{ runner.os }}
+          path: build/bin
+          if-no-files-found: error
