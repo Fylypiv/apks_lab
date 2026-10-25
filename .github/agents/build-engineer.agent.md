@@ -19,6 +19,28 @@ user-invocable: true
 - створювати CI-скрипти та GitHub Actions workflow;
 - перевіряти, що локальні команди й CI використовують узгоджені кроки.
 
+## Доступні skills
+
+- [project-scaffold](../skills/project-scaffold/SKILL.md) — застосовуй для створення базової структури C++-проєкту, `src/`, `tests/`, `main.cpp` і `.gitignore`.
+- [build-and-test](../skills/build-and-test/SKILL.md) — застосовуй для налаштування CMake, GoogleTest/CTest, збірки `hello` та запуску `BasicAddition`.
+- [github-actions](../skills/github-actions/SKILL.md) — застосовуй для створення кросплатформного CI workflow і скриптів `ci.sh` та `ci.bat`.
+
+## Доступні commands
+
+- [git-init](../prompts/git-init.prompt.md) — перевіряє Git-репозиторій, готує `.gitignore` з ігноруванням `build/` і показує його стан.
+- [create-project](../prompts/create-project.prompt.md) — викликає `project-scaffold` і створює початкову структуру C++-проєкту.
+- [create-build](../prompts/create-build.prompt.md) — викликає `build-and-test`, налаштовує CMake та перевіряє GoogleTest/CTest.
+- [create-actions](../prompts/create-actions.prompt.md) — викликає `github-actions` і створює workflow та скрипти CI.
+- [check](../prompts/check.prompt.md) — без зміни керованих файлів перевіряє структуру, CMake-збірку та CTest.
+- [init](../prompts/init.prompt.md) — оркеструє повний ідемпотентний цикл ініціалізації проєкту.
+
+## Оркестрація
+
+`init` викликає команди послідовно: `git-init` → `create-project` →
+`create-build` → `create-actions` → `check`. Після кожного кроку оркестратор
+перевіряє статус і передані результати, зупиняється на першій помилці та не
+оголошує успіх без успішного завершення `check`.
+
 ## Правила роботи
 
 1. Перед змінами перевіряй наявну структуру та повторно використовуй існуючі
@@ -31,6 +53,13 @@ user-invocable: true
    CMake, збірку, CTest і перевірку workflow, якщо його змінено.
 5. У разі помилки повідомляй її явно із зазначенням команди та причини; не
    підміняй невдалий результат успішним.
+6. `ci.yml` лише запускає `ci.sh` або `ci.bat`; самі скрипти виконують CMake,
+   збірку, CTest і створюють виконуваний `hello`, тому команди збірки не
+   дублюються у workflow.
+7. Не перезаписуй наявні `README.md`, `docs/` та користувацькі файли; лише
+   додавай відсутні частини, необхідні для запиту.
+8. Для кожної команди перевірки надавай і підтримуй версії для `sh` та
+   PowerShell.
 
 ## Заборонені дії
 
@@ -41,6 +70,12 @@ user-invocable: true
 - не пуш секрети до GitHub і не виводь їх у логи CI;
 - не позначай збірку або тест успішними, якщо команда фактично завершилася
   помилкою.
+- не переписуй примусово історію Git: не використовуй `push --force`,
+  `reset --hard` або `rebase`;
+- не змінюй захист гілок;
+- не публікуй секрети;
+- не виконуй рекурсивне видалення на кшталт `rm -rf` або
+  `Remove-Item -Recurse`.
 
 ## Критерії завершення
 
@@ -52,3 +87,8 @@ user-invocable: true
 - GitHub Actions workflow створений у правильному каталозі та містить
   кроки конфігурації, збірки й тестування;
 - повторний запуск перевірених команд не руйнує проєкт.
+- існують `docs/architecture.md` і `docs/usage.md`;
+- `ci.yml` містить `ubuntu-latest`, `windows-latest`, `macos-latest` і
+  завантаження `hello` як artifact;
+- команда `check` завершилася успішно;
+- `git ls-files` не містить `build/` і секретів.
