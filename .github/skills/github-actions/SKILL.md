@@ -29,7 +29,7 @@ description: "Застосовуй для створення кросплатф�
   request та має матрицю:
   `ubuntu-latest`, `windows-latest`, `macos-latest`;
 - `ci.sh` — виконуваний Unix-скрипт для Linux/macOS, який безпосередньо
-  виконує конфігурацію CMake, збірку та `ctest --output-on-failure`;
+  виконує конфігурацію CMake, збірку та `ctest -C Debug --output-on-failure`;
 - `ci.bat` — Windows Batch-скрипт, який безпосередньо виконує ті самі кроки
   через CMake та CTest і повертає ненульовий код при помилці.
 
@@ -73,7 +73,7 @@ ci.bat
 ```
 
 Скрипти мають завершитися успішно лише після успішних `cmake`, збірки та
-`ctest`. За наявності GitHub Actions linter додатково перевір YAML цим
+`ctest -C Debug`. За наявності GitHub Actions linter додатково перевір YAML цим
 інструментом.
 
 ## Дії при помилці

@@ -41,12 +41,13 @@ description: "Застосовуй для налаштування CMake-збі�
 ```sh
 cmake -S . -B build
 cmake --build build
-ctest --test-dir build --output-on-failure
+ctest --test-dir build -C Debug --output-on-failure
 ```
 
 Очікуваний результат: конфігурація та збірка завершуються успішно, а CTest
-показує успішне проходження тесту `BasicAddition`. Якщо генератор вимагає
-конфігурацію, додай відповідний режим, наприклад `--config Release`.
+показує успішне проходження тесту `BasicAddition`. Параметр `-C Debug`
+потрібен для multi-config генераторів на кшталт Visual Studio; для іншої
+конфігурації узгоджено заміни `Debug` на її назву.
 
 ## Дії при помилці
 
