@@ -87,3 +87,64 @@ CTest. Виправ відповідний CI-файл і повтори лок�
 Якщо помилка відтворюється лише на конкретній платформі, не оголошуй workflow
 готовим: повідом платформу та повний діагностичний результат і зупини
 оркестрацію до виправлення.
+
+## Приклад входу
+
+```yaml
+workflow_file: .github/workflows/ci.yml
+script_unix: ci.sh
+script_windows: ci.bat
+runner_matrix:
+  - ubuntu-latest
+  - windows-latest
+  - macos-latest
+artifact_name: hello-${{ runner.os }}
+artifact_path: build/bin
+```
+
+## Обов'язкова конфігурація workflow
+
+Використовуй такі тригери:
+
+```yaml
+on:
+  push:
+    branches: [develop, master, 'feature/**']
+  pull_request:
+    branches: [develop, master]
+```
+
+Workflow має містити одну job із матрицею трьох ОС, `actions/checkout@v4`,
+`permissions: contents: read`, а також окремі кроки:
+
+```yaml
+- name: Run Unix CI
+  if: runner.os != 'Windows'
+  shell: sh
+  run: sh ci.sh
+
+- name: Run Windows CI
+  if: runner.os == 'Windows'
+  shell: cmd
+  run: call ci.bat
+
+- name: Upload hello
+  uses: actions/upload-artifact@v4
+  with:
+    name: hello-${{ runner.os }}
+    path: build/bin
+    if-no-files-found: error
+```
+
+Не додавай секрети. `ci.sh` і `ci.bat` після CTest мають запускати `hello`,
+перевіряти `Hello World` і повертати ненульовий код, якщо конфігурація, збірка,
+тест або запуск програми завершилися невдало.
+
+## Типовий сценарій помилки
+
+**Симптом:** workflow завершується успішно, але artifact `hello` відсутній.
+**Причина:** CI-скрипт не створив `hello` у `build/bin` або upload-крок має
+неправильний шлях чи не використовує `if-no-files-found: error`.
+**Виправлення:** узгодь `CMAKE_RUNTIME_OUTPUT_DIRECTORY`, шляхи в `ci.sh` і
+`ci.bat` та `path: build/bin`, після чого повтори збірку, CTest, запуск
+`hello` і завантаження artifact.

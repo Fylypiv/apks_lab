@@ -62,3 +62,64 @@ ctest --test-dir build --output-on-failure
 
 Наступний етап дозволено запускати лише після успішного завершення `cmake`,
 збірки та `ctest`.
+
+## Додаткові налаштування CMake
+
+У `CMakeLists.txt` перед `add_executable` додай:
+
+```cmake
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+```
+
+Це розміщує виконувані файли у `build/bin` і не збирає непотрібний GoogleMock.
+Після `ctest` запусти `hello` та перевір точний вивід `Hello World`:
+
+- Unix: `build/bin/hello`;
+- Windows із Visual Studio: `build/bin/Debug/hello.exe`.
+
+## Команди перевірки для платформ
+
+Для `sh`:
+
+```sh
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --config Debug
+ctest --test-dir build -C Debug --output-on-failure
+test "$(build/bin/hello)" = "Hello World"
+```
+
+Для PowerShell:
+
+```powershell
+cmake -S . -B build
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+cmake --build build --config Debug
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+ctest --test-dir build -C Debug --output-on-failure
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ((& .\build\bin\Debug\hello.exe) -ne "Hello World") { exit 1 }
+```
+
+Для одноконфігураційного Unix-генератора шлях до `hello` залишається
+`build/bin/hello`; для Visual Studio використовується
+`build/bin/Debug/hello.exe`.
+
+## Приклад входу
+
+```yaml
+project_root: .
+cmake_build_dir: build
+configuration: Debug
+test_name: BasicAddition
+hello_output: "Hello World"
+```
+
+## Типовий сценарій помилки
+
+**Симптом:** CTest проходить, але запуск `hello` завершується помилкою
+«файл не знайдено». **Причина:** не задано
+`CMAKE_RUNTIME_OUTPUT_DIRECTORY` або використано шлях Unix для Visual Studio.
+**Виправлення:** додай потрібні `set(...)` перед `add_executable`, перебудуй
+проєкт і використовуй `build/bin/hello` на Unix або
+`build/bin/Debug/hello.exe` у Visual Studio.
