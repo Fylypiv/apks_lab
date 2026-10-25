@@ -49,8 +49,8 @@ argument-hint: "Послідовно ініціалізувати, зібрат�
 
 ```sh
 cmake -S . -B build
-cmake --build build --config Debug
-ctest --test-dir build -C Debug --output-on-failure
+cmake --build build
+ctest --test-dir build --output-on-failure
 ```
 
 Фінальний статус `init` — успішний лише за умови успішного завершення всіх
