@@ -18,12 +18,13 @@ AI-агент автоматизує початкове створення та 
 Оркестратор керує трьома спеціалізованими skills:
 
 1. **`project-scaffold`** — створює або доповнює структуру C++-проєкту:
-   `CMakeLists.txt`, каталог вихідного коду, каталог тестів і `.gitignore`.
-2. **`build-and-test`** — конфігурує CMake, компілює ціль `hello` та запускає
-   GoogleTest через CTest.
+   `src/`, `tests/`, документацію `docs/` і `.gitignore`; не перезаписує
+   наявні користувацькі файли.
+2. **`build-and-test`** — створює або оновлює `CMakeLists.txt`, тест
+   `BasicAddition`, виконує конфігурацію CMake, збірку та запуск CTest.
 3. **`github-actions`** — генерує workflow у
-   `.github/workflows/` для повторення локальної збірки й тестування в GitHub
-   Actions.
+   `.github/workflows/` і CI-скрипти для повторення локальної збірки й
+   тестування в GitHub Actions.
 
 Типовий порядок роботи:
 
@@ -70,6 +71,21 @@ init
 `project-scaffold`, а `github-actions` може використати ті самі команди
 конфігурації, збірки й тестування. Фінальний `check` отримує всі результати й
 формує підсумок для користувача.
+
+## Відповідність файлів ролям
+
+| Шлях | Роль |
+|---|---|
+| `.github/agents/` | Agent Manifest і роль Build & CI/CD Engineer |
+| `.github/skills/` | Skills для scaffold, збірки/тестування та GitHub Actions |
+| `.github/prompts/` | Commands і оркестратор `init` |
+| `.github/workflows/` | CI/CD workflow GitHub Actions |
+| `docs/architecture.md` | Архітектура та потік даних агента |
+| `docs/usage.md` | Команди запуску агента, локальної перевірки й CI |
+| `docs/ai-log.md` | Журнал запитів, відповідей, помилок і рішень |
+
+Детальний журнал виконання та виправлень наведено в
+[docs/ai-log.md](ai-log.md).
 
 ## Обробка помилок
 
